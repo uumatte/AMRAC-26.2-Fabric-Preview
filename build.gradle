@@ -1,0 +1,75 @@
+plugins {
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
+    id 'maven-publish'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+repositories {
+    mavenCentral()
+}
+
+loom {
+    splitEnvironmentSourceSets()
+
+    mods {
+        amrac {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
+
+    // Mojang mappings: the ported 1.16.5 code already uses Mojang names.
+    accessWidenerPath = file("src/main/resources/amrac.accesswidener")
+
+    // Separate server dir so client and server do not share a world save.
+    runs {
+        server {
+            runDir = "run-server"
+        }
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+}
+
+processResources {
+    inputs.property "version", project.version
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.encoding = "UTF-8"
+    it.options.release = 25
+    it.options.compilerArgs.addAll(["-Xmaxerrs", "10000"])
+}
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+}
+
+jar {
+    from(["NOTICE", "COPYING", "COPYING.LESSER"]) {
+        rename { "${it}_${project.base.archivesName.get()}" }
+    }
+}
+
+// Lets a script be piped into the dev server console.
+tasks.matching { it.name == 'runServer' }.configureEach {
+    standardInput = System.in
+    if (project.hasProperty('aidebug')) {
+        systemProperty 'amrac.aidebug', 'true'
+    }
+}
