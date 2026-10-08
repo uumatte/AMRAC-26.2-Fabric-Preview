@@ -25,12 +25,12 @@ Linux / macOS:
 ./gradlew build
 ```
 
-The mod jar is written to `build/libs/amrac-fabric-1.0.0+26.2.jar`. The `-sources.jar` next to it contains source code only; don't install it.
+The mod jar is written to `build/libs/amrac-fabric-1.1.0+26.2.jar`. The `-sources.jar` next to it contains source code only; don't install it.
 
 ## Install
 
 1. Install Fabric Loader for Minecraft 26.2.
-2. Put `amrac-fabric-1.0.0+26.2.jar` and Fabric API into the `mods` folder.
+2. Put `amrac-fabric-1.1.0+26.2.jar` and Fabric API into the `mods` folder.
 3. Do this on **both the client and the server**.
 
 ## Run in development
